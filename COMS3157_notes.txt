@@ -1,0 +1,31 @@
+  1 -------------------------------------------------------------------------------
+  2 January 28, 2020
+  3 ----------------
+  4 
+  5 #include <stdio.h> is NOT including library code (does not include code for
+  6 printf())
+  7 
+  8 libc.a is the standard library file
+  9 
+ 10 gcc <linking files> -o <executable file> -lc : This links with library code
+ 11 For lab1, we will be linking with math library #include <math.h>
+ 12 Instead of -lc, use -lm
+ 13 
+ 14 Don't forget cat <filename> command to view code instead of having to use
+ 15 vim
+ 16 
+ 17 gcc -Wall -c  <files> to check for all warnings
+ 18 
+ 19 Mismatch in parameters will not cause an error in compiling and linking
+ 20 
+ 21 gcc -Wall -c problem_file will not compile
+ 22 
+ 23 make is a program that looks for a file in cd called "Makefile". Makefile
+ 24 
+ 25 cat -t Makefile : replaces cat with ^I
+ 26 
+ 27 cat -tn Makefile : by lines
+ 28 
+ 29 rm *.o main
+ 30 
+ 31 -------------------------------------------------------------------------------

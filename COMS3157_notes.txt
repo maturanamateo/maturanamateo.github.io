@@ -29,3 +29,167 @@
  29 rm *.o main
  30 
  31 -------------------------------------------------------------------------------
+ 32 February 4, 2020
+ 33 ----------------
+ 34 
+ 35 #include "myadd.h"
+ 36 -instead of that line, include the contents of file myadd.h
+ 37 
+ 38 #define PI 3.14
+ 39 -all "PI" replaced by "3.14" then program compiled
+ 40 
+ 41 #define SQR(x)  x*x
+ 42 -SQR(3) would be replaced by 3*3
+ 43 -not really a function, just works as a search and replace
+ 44 -SQR(2+3) would be replaced by 2+3*2+3 which would be 11 instead of the desired
+ 45 result of 25
+ 46 
+ 47 In macros put parentheses everywhere
+ 48 
+ 49 #define SQR(x)  ((x) * (x))
+ 50 - this would work
+ 51 
+ 52 CONTENT of myadd.h
+ 53 
+ 54 #ifndef _MYADD_H_
+ 55 #define _MYADD_H_
+ 56 int myadd(int, int, int);
+ 57 #endif
+ 58 
+ 59 /* Notes deleted by accident. Check jae's notes online for complete set*/
+ 60 -------------------------------------------------------------------------------
+ 61 February 6, 2020
+ 62 ----------------
+ 63 
+ 64 Types of Variables
+ 65 -----------------
+ 66 
+ 67 1) automatic variables
+ 68 - stack variables
+ 69 2) static
+ 70 - global
+ 71 - file
+ 72 -function
+ 73 
+ 74 RAM
+ 75 
+ 76 Process Address Space
+ 77 ---------------------
+ 78 
+ 79 -Each process gets 512GB of memory space
+ 80 -when a certain thing in memory is accessed, it is mapped to somewhere in
+ 81 the 16GB RAM
+ 82 -each process itself thinks its the only thing running
+ 83 
+ 84         operating system
+ 85           code & data
+ 86  512G ---------------------
+ 87              stack
+ 88       ---------------------
+ 89                |
+ 90                V
+ 91 
+ 92                ^
+ 93                |
+ 94       ---------------------
+ 95               heap
+ 96       ---------------------
+ 97         static variables
+ 98       ---------------------
+ 99          program code
+100     0 ---------------------
+101 
+102 stack will grow down
+103 -like an upside down stack
+104 -push to bottom, pop from bottom
+105 -functions can override spaces if the stack rolls up to variables that are
+106 not at the bottom
+107 
+108 Ex
+109 --
+110 f(){
+111   int a, b;
+112   h();
+113   a= b+2;
+114   h2();
+115 }
+116 
+117 h()
+118 {
+119   int c, d;
+120 }
+121 
+122 h2()
+123 {
+124   int e, f;
+125 }
+126 
+127 stack will be
+128 
+129 [a,b,c,d] --> [a,b, (c), (d)] --> [a,b,e,f]
+130 
+131 c,d get override b/c a= b+2 causes the stack to roll up to elements 0 and 1
+132 
+133 Pointers!
+134 ---------
+135 -the real meat of the C language
+136 -REFER to lectures notes 4
+137 -THE FOLLOWING DIAGRAMS ARE IN DIRECT RELATION TO LECTURE NOTES
+138 
+139 2000   |------
+140        |x = 1
+141        |------
+142 
+143 
+144 
+145 
+146 int *p is a pointer
+147 int * - pointer/address to int
+148 p is the variable in this case
+149 
+150 foo()
+151 {
+152   int x = 1, y = 2;
+153   int *p;   // p is a pointer
+154   p = &x;   // p holds the address of an int variable
+155   y = *p;   // y = 1 now     y = *p basically equivalent to y = x
+156   *p = 0;   // putting 0 into x  in general, putting 0 into what p points to
+157   p = &y    // p now points to y
+158   *p = 2    // y now equals 2
+159   ++*p;     // y incremented by 1 so y = 3
+160   (*p)++;   // y incremented by 1 so y = 4 now parentheses means *(p++)
+161 }
+162 
+163 some()
+164 {
+165   int i = 1234;
+166   double d = 3.14;
+167   int *pi = &i;
+168   double *pd = &d;
+169   pi = pd    // compiler error because incompatible types (int* vs double*)
+170   pi = (int *)pd  // compiles because changing type
+171   int x = *pi;
+172   void *pv = pd;  // void *  can have any type
+173   *pv = 30;       // not allowed because you dont know bytes
+174   *(double *)pv = 30; // dereference so now it works
+175 }
+176 
+177 Null Pointer
+178 ------------
+179 
+180   int *pi = 0;
+181   pi = NULL; // C provides #define NULL 0
+182 
+183 --------------
+184 
+185   int x = 0;
+186   int *p = &x;
+187 
+188   if(x) { //false because x = 0
+189   if(p) { //true b/c p is not 0
+190   if(*p) { // false b/c *p is 0
+191 
+192   *p = 0;
+193 
+194   if(p) { // false because *p is 0
+195   if(*p) //would  crash program

@@ -292,3 +292,210 @@
 292 // by convention, c treats a char array with 0 at the end as a string
 293 // *("abc" + 1) <=> 98
 294 // it would reference the second element because it turns into char *
+295 -------------------------------------------------------------------------------
+296 February 13, 2020
+297 -----------------
+298 *copy over notes from Justin*
+299 
+300 
+301 -------------------------------------------------------------------------------
+302 February 18, 2020
+303 -----------------
+304 -Midterm 1 covers everything up to Lecture on 2/20 but not lab3 material
+305 
+306 const keyword
+307 -------------
+308 
+309 {
+310   const char *p;
+311   char x = 'A';
+312   p = &x;
+313   printf("%c", *p);
+314   *p = 'a'; //will result in compilation error
+315   // cannot change what p is pointing to
+316   x = 'a'; // this is fine
+317   *(char *)p = 'a'; //this is legal because you dereference const
+318   p = NULL;
+319 }
+320 
+321 Pointer to functions
+322 --------------------
+323 -qsort
+324 -size_t can be thought of as unsigned int
+325 typedef int MyInt;
+326 -the type of f in qsort is int(*)(const void *, const void *)
+327 -so, f is a pointer to a function
+328 qsort(pointer to first array, num elements, byte size of each element,
+329 pointer to comparing function);
+330 int main()
+331 {
+332   int a[5] = {-37, -30, 25, 10, 137};
+333   qsort(a, sizeof(a)/sizeof(*a), sizeof(*a), &myFunc);
+334   // remember *a <=> a[0]
+335 }
+336 
+337 int myFunc(const void *a, const void *b)
+338 {
+339   int *p = a;
+340   int *q = b;
+341   int x = *p;
+342   int y = *q;
+343   if (x < y)
+344     return -1;
+345   else if (y < x)
+346     return 1;
+347   else
+348     return 0;
+349   //return *(int *)a - *(int *)b also works
+350   //you dereference it right away and then can subtract
+351 }
+352 
+353 foo()
+354 {
+355   int x;
+356   int (*f1)(void *); // declaration of variable of type int(*)(void *)
+357   int *f2(void *); // declaration of a function f2 that takes in void * and
+358   //returns int*
+359   int (*f3[5])(void *); //f3 is an array of length 5 where each element is
+360   //of type int(*)(void *)
+361 }
+362 
+363 int *f2(void *) <=> (int *)f2(void *) //conceptually not literally
+364 
+365 To decode:
+366 1. First identify name
+367 2. Spiral out counterclockwise
+368 
+369 Ex
+370 --
+371 for f3 you see it as an array of 5 elements first, then you see that each
+372 element is a pointer. You then see that each element is a pointer to
+373 function that takes void * and returns int. Conclusion: f3 is an array of 5
+374 pointers to function that takes void * and returns int.
+375 
+376 Ex
+377 --
+378 char *a[3];
+379 
+380 a is an array of 3 pointers to char.
+381 
+382 char *a[3] = {"abc", "def", "xyz"};
+383 char **p = a;
+384 
+385 -More examples in Lecture notes 7 (look at them!)
+386 
+387 Struct
+388 ------
+389 
+390 struct pt {
+391   double x;
+392   double y;
+393 };
+394 
+395 //This it like class in java but no methods
+396 
+397 int foo()
+398 {
+399   double a;
+400   struct pt p1;
+401   //struct pt is now a new type
+402   //struct pt is 16 bytes because it contains two doubles
+403   //sometimes the size of struct is bigger than sum of parts
+404   //depends on the system you're running it on
+405   struct pt p2 = {1.0, 2.0};
+406   a = p2.x;
+407   struct pt *q = &p2;
+408   (*q).y = 4.0;
+409   // . binds more tightly than * so thats the reason for parentheses
+410   q -> y = 4.0;
+411   // (*q).y = 4.0 <==> q -> y = 4.0;
+412   //arrow operates from pointer to structure
+413   // dot operates on the structure itself
+414   double *q2 = &p2.x;
+415   //q2 and q would have the same address but the difference is type
+416 }
+417 
+418 
+419 ---
+420 
+421 struct pt p3[1];
+422 p3 -> x = 2.0;
+423 //by using this syntax, you can then use p3 as a pointer
+424 
+425 -------------------------------------------------------------------------------
+426 February 20, 2020
+427 -----------------
+428 - Midterm on Tuesday 2/25
+429 - Mock exam tmrw
+430 - exam will cover linked list and other materials from today
+431 - "if you pick multiple answers, we will pick the one that results in the
+432 lowest grade"
+433 
+434 Linked List in C
+435 ----------------
+436 struct Node *create2Nodes(int v1, int v2)
+437 {
+438   struct Node *head = NULL;
+439   struct Node *n2 = malloc(sizeof(struct Node));
+440   n2->next = head;
+441   n1->val = v2;
+442   head = n2;
+443   struct Node *n1 = malloc(sizeof(struct Node));
+444   n1->next = head;
+445   n1->val = v1;
+446   head = n1;
+447   return head;
+448 }
+449 
+450 struct Node {
+451   struct Node *next;
+452   int val;
+453 };
+454 
+455 int main()
+456 {
+457   struct Node *list = create2NOdes(100, 200);
+458   struct Node *node = list;
+459   while(node){
+460     printf("%d", node->val);
+461     node = node->next;
+462   }
+463   free(list->next);
+464   free(list);
+465 }
+466 
+467 Node
+468 --------        ---------         ---------
+469 |      |------> |       |-------> |   0   |
+470 |      |        ---------         ---------
+471 --------        |  100  |         |  200  |
+472                 ---------         ---------
+473 
+474 - free them in reverse order because of pointers
+475 - if you free the first one for example, theres no way you can reach the
+476   second node in order to free it
+477 
+478 Standard I/O
+479 ------------
+480 
+481 ./a.out > out
+482 - output redirects to file "out" instead of screen
+483 
+484 ./a.out < input
+485 - instead of prompting for user input, a.out reads file "input" as the input
+486   to the program
+487 
+488 ./a.out < input > out
+489 - overwrites file out with output
+490 
+491 ./a.out < input >> out
+492 - appends output to file out instead of overwrite
+493 
+494 3 I/O Channels
+495 - standard input
+496 - standard output
+497 - standard error
+498 
+499 for example, output from valgrind is directed to standard error
+500 (valgrind command) ./a.out 2> err
+501 - this would redirect error message to file err
